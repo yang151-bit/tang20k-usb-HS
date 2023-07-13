@@ -1,0 +1,58 @@
+//Copyright (C)2014-2022 Gowin Semiconductor Corporation.
+//All rights reserved. 
+//File Title: Physical Constraints file
+//GOWIN Version: 1.9.8.06-1
+//Part Number: GW2AR-LV18QN88PC7/I6
+//Device: GW2AR-18C
+//Created Time: Fri 12 09 11:01:11 2022
+
+//IO_LOC "usb_dxp_io" 73,72;
+//IO_PORT "usb_dxp_io" PULL_MODE=NONE DRIVE=4;
+//IO_LOC "LED" 13;
+//IO_PORT "LED" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+//IO_LOC "usb_pullup_en_o" 80;
+//IO_PORT "usb_pullup_en_o" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+//IO_LOC "usb_term_dn_io" 74;
+//IO_PORT "usb_term_dn_io" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+//IO_LOC "usb_term_dp_io" 75;
+//IO_PORT "usb_term_dp_io" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+//IO_LOC "usb_rxdn_i" 71;
+//IO_PORT "usb_rxdn_i" IO_TYPE=LVDS25 PULL_MODE=NONE;
+//IO_LOC "usb_rxdp_i" 77;
+//IO_PORT "usb_rxdp_i" IO_TYPE=LVDS25 PULL_MODE=NONE;
+//IO_LOC "CLK_IN" 10;
+//IO_PORT "CLK_IN" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+IO_LOC "CLK_IN" H11;
+IO_PORT "CLK_IN" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+IO_LOC "LED" L16;
+IO_PORT "LED" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "RESET_N" T3;
+IO_PORT "RESET_N" IO_TYPE=LVCMOS15 PULL_MODE=NONE;
+
+IO_LOC "ulpi_stp" K11;
+IO_PORT "ulpi_stp" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_rst" F10;
+IO_PORT "ulpi_rst" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_data[7]" R12;
+IO_PORT "ulpi_data[7]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_data[6]" P13;
+IO_PORT "ulpi_data[6]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_data[5]" R13;
+IO_PORT "ulpi_data[5]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_data[4]" T14;
+IO_PORT "ulpi_data[4]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_data[3]" H13;
+IO_PORT "ulpi_data[3]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_data[2]" J12;
+IO_PORT "ulpi_data[2]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_data[1]" H12;
+IO_PORT "ulpi_data[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_data[0]" G11;
+IO_PORT "ulpi_data[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+IO_LOC "ulpi_nxt" K13;
+IO_PORT "ulpi_nxt" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "ulpi_dir" K12;
+IO_PORT "ulpi_dir" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "ulpi_clk" T15;
+IO_PORT "ulpi_clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
