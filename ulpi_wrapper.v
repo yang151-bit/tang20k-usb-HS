@@ -1,39 +1,31 @@
 //-----------------------------------------------------------------
-//                       USB Serial Port
-//                            V0.1
-//                     Ultra-Embedded.com
-//                       Copyright 2020
+//                        ULPI (Link) Wrapper
+//                              V1.2
+//                        Ultra-Embedded.com
+//                        Copyright 2015-2020
 //
 //                 Email: admin@ultra-embedded.com
 //
-//                         License: LGPL
+//                         License: GPL
+// If you would like a version with a more permissive license for
+// use in closed source commercial applications please contact me
+// for details.
 //-----------------------------------------------------------------
 //
-// This source file may be used and distributed without         
-// restriction provided that this copyright statement is not    
-// removed from the file and that any derivative work contains  
-// the original copyright notice and the associated disclaimer. 
+// This file is open source HDL; you can redistribute it and/or 
+// modify it under the terms of the GNU General Public License as 
+// published by the Free Software Foundation; either version 2 of 
+// the License, or (at your option) any later version.
 //
-// This source file is free software; you can redistribute it   
-// and/or modify it under the terms of the GNU Lesser General   
-// Public License as published by the Free Software Foundation; 
-// either version 2.1 of the License, or (at your option) any   
-// later version.
+// This file is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// This source is distributed in the hope that it will be       
-// useful, but WITHOUT ANY WARRANTY; without even the implied   
-// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
-// PURPOSE.  See the GNU Lesser General Public License for more 
-// details.
-//
-// You should have received a copy of the GNU Lesser General    
-// Public License along with this source; if not, write to the 
-// Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
-// Boston, MA  02111-1307  USA
-//-----------------------------------------------------------------
-
-//-----------------------------------------------------------------
-//                          Generated File
+// You should have received a copy of the GNU General Public 
+// License along with this file; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+// USA
 //-----------------------------------------------------------------
 
 module ulpi_wrapper
@@ -265,6 +257,7 @@ reg                 utmi_rxerror_q;
 reg                 utmi_rxactive_q;
 reg [1:0]           utmi_linestate_q;
 reg [7:0]           utmi_data_q;
+
 
 always @ (posedge ulpi_clk60_i or posedge ulpi_rst_i)
 if (ulpi_rst_i)
