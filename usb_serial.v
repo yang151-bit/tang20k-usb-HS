@@ -9,16 +9,16 @@ module usb_serial
 // Ports
 //-----------------------------------------------------------------
 (
-      output          uart_rx_o
-    , input           uart_tx_i
+    // output          uart_rx_o,
+    // input           uart_tx_i,
 
     // ULPI Interface
-    , output          ulpi_reset_o
-    , inout [7:0]     ulpi_data_io
-    , output          ulpi_stp_o
-    , input           ulpi_nxt_i
-    , input           ulpi_dir_i
-    , input           ulpi_clk60_i
+    output          ulpi_reset_o,
+    inout [7:0]     ulpi_data_io,
+    output          ulpi_stp_o,
+    input           ulpi_nxt_i,
+    input           ulpi_dir_i,
+    input           ulpi_clk60_i
 );
 
 // USB clock / reset
@@ -72,6 +72,7 @@ u_usb
     ,.rx_o(uart_rx_o)
 );
 
+assign uart_tx_i = uart_rx_o;
 assign ulpi_reset_o = 1'b1;
 
 endmodule
