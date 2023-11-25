@@ -1,10 +1,11 @@
-//Copyright (C)2014-2022 Gowin Semiconductor Corporation.
+//Copyright (C)2014-2023 Gowin Semiconductor Corporation.
 //All rights reserved.
 //File Title: Template file for instantiation
-//GOWIN Version: GowinSynthesis V1.9.8.08
+//GOWIN Version: V1.9.9 Beta
 //Part Number: GW2A-LV18PG256C8/I7
-//Device: GW2A-18C
-//Created Time: Wed Jul 12 20:08:29 2023
+//Device: GW2A-18
+//Device Version: C
+//Created Time: Sat Nov 25 21:38:29 2023
 
 //Change the instance name and port connections to the signal names
 //--------Copy here to design--------
@@ -15,7 +16,7 @@
 		.WrEn(WrEn_i), //input WrEn
 		.RdEn(RdEn_i), //input RdEn
 		.Reset(Reset_i), //input Reset
-		.Wnum(Wnum_o), //output [12:0] Wnum
+		.Wnum(Wnum_o), //output [11:0] Wnum
 		.Almost_Empty(Almost_Empty_o), //output Almost_Empty
 		.Almost_Full(Almost_Full_o), //output Almost_Full
 		.Q(Q_o), //output [7:0] Q

@@ -2,35 +2,85 @@
 <GAO_CONFIG>
     <Version>3.0</Version>
     <Mode>Standard</Mode>
-    <AoCore index="0" sample_clock="PHY_CLKOUT" trig_type="0" storage_depth="256" window_num="1" capture_amount="256" trigger_pos="0" module_name="Top" force_trigger_by_falling_edge="true">
+    <AoCore index="0" sample_clock="PHY_CLKOUT" trig_type="0" storage_depth="1024" window_num="1" capture_amount="1024" trigger_pos="0" module_name="Top" force_trigger_by_falling_edge="true">
         <SignalList>
-            <Bus name="stage[7:0]">
-                <Signal>stage[7]</Signal>
-                <Signal>stage[6]</Signal>
-                <Signal>stage[5]</Signal>
-                <Signal>stage[4]</Signal>
-                <Signal>stage[3]</Signal>
-                <Signal>stage[2]</Signal>
-                <Signal>stage[1]</Signal>
-                <Signal>stage[0]</Signal>
+            <Bus name="bRequest[7:0]">
+                <Signal>bRequest[7]</Signal>
+                <Signal>bRequest[6]</Signal>
+                <Signal>bRequest[5]</Signal>
+                <Signal>bRequest[4]</Signal>
+                <Signal>bRequest[3]</Signal>
+                <Signal>bRequest[2]</Signal>
+                <Signal>bRequest[1]</Signal>
+                <Signal>bRequest[0]</Signal>
+            </Bus>
+            <Bus name="wValue[15:8]">
+                <Signal>wValue[15]</Signal>
+                <Signal>wValue[14]</Signal>
+                <Signal>wValue[13]</Signal>
+                <Signal>wValue[12]</Signal>
+                <Signal>wValue[11]</Signal>
+                <Signal>wValue[10]</Signal>
+                <Signal>wValue[9]</Signal>
+                <Signal>wValue[8]</Signal>
+            </Bus>
+            <Bus name="wIndex[7:0]">
+                <Signal>wIndex[7]</Signal>
+                <Signal>wIndex[6]</Signal>
+                <Signal>wIndex[5]</Signal>
+                <Signal>wIndex[4]</Signal>
+                <Signal>wIndex[3]</Signal>
+                <Signal>wIndex[2]</Signal>
+                <Signal>wIndex[1]</Signal>
+                <Signal>wIndex[0]</Signal>
+            </Bus>
+            <Bus name="bmRequestType[7:0]">
+                <Signal>bmRequestType[7]</Signal>
+                <Signal>bmRequestType[6]</Signal>
+                <Signal>bmRequestType[5]</Signal>
+                <Signal>bmRequestType[4]</Signal>
+                <Signal>bmRequestType[3]</Signal>
+                <Signal>bmRequestType[2]</Signal>
+                <Signal>bmRequestType[1]</Signal>
+                <Signal>bmRequestType[0]</Signal>
+            </Bus>
+            <Bus name="wLength[7:0]">
+                <Signal>wLength[7]</Signal>
+                <Signal>wLength[6]</Signal>
+                <Signal>wLength[5]</Signal>
+                <Signal>wLength[4]</Signal>
+                <Signal>wLength[3]</Signal>
+                <Signal>wLength[2]</Signal>
+                <Signal>wLength[1]</Signal>
+                <Signal>wLength[0]</Signal>
             </Bus>
         </SignalList>
         <Triggers>
             <Trigger index="0">
                 <SignalList>
-                    <Bus restorename="stage[7:0]">
-                        <Signal>stage[7]</Signal>
-                        <Signal>stage[6]</Signal>
-                        <Signal>stage[5]</Signal>
-                        <Signal>stage[4]</Signal>
-                        <Signal>stage[3]</Signal>
-                        <Signal>stage[2]</Signal>
-                        <Signal>stage[1]</Signal>
-                        <Signal>stage[0]</Signal>
-                    </Bus>
+                    <Signal>u_frame/SOF_I</Signal>
                 </SignalList>
             </Trigger>
-            <Trigger index="1"/>
+            <Trigger index="1">
+                <SignalList>
+                    <Signal>wValue[15]</Signal>
+                    <Signal>wValue[14]</Signal>
+                    <Signal>wValue[13]</Signal>
+                    <Signal>wValue[12]</Signal>
+                    <Signal>wValue[11]</Signal>
+                    <Signal>wValue[10]</Signal>
+                    <Signal>wValue[9]</Signal>
+                    <Signal>wValue[8]</Signal>
+                    <Signal>wIndex[7]</Signal>
+                    <Signal>wIndex[6]</Signal>
+                    <Signal>wIndex[5]</Signal>
+                    <Signal>wIndex[4]</Signal>
+                    <Signal>wIndex[3]</Signal>
+                    <Signal>wIndex[2]</Signal>
+                    <Signal>wIndex[1]</Signal>
+                    <Signal>wIndex[0]</Signal>
+                </SignalList>
+            </Trigger>
             <Trigger index="2"/>
             <Trigger index="3"/>
             <Trigger index="4"/>
@@ -47,8 +97,8 @@
             <Trigger index="15"/>
         </Triggers>
         <MatchUnits>
-            <MatchUnit index="0" enabled="1" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="00001000" value1="00000000" trigger="0"/>
-            <MatchUnit index="1" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="0" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="0" value1="0" trigger="0"/>
+            <MatchUnit index="1" enabled="1" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="0000000100000001" value1="0000000000000000" trigger="1"/>
             <MatchUnit index="2" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
             <MatchUnit index="3" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
             <MatchUnit index="4" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
@@ -65,8 +115,8 @@
             <MatchUnit index="15" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
         </MatchUnits>
         <Expressions type="Static">
-            <Expression>M0</Expression>
+            <Expression>M1</Expression>
         </Expressions>
     </AoCore>
-    <GAO_ID>0100011100100010</GAO_ID>
+    <GAO_ID>0101111100000110</GAO_ID>
 </GAO_CONFIG>

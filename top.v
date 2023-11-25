@@ -472,127 +472,67 @@ always@(posedge PHY_CLKOUT, posedge RESET_IN   ) begin
     end
 end
 
- // USB_Device_Controller_Top u_usb_device_controller_top (
-    //          .clk_i                 (PHY_CLKOUT          )
-    //         ,.reset_i               (RESET_IN            )
-    //         ,.usbrst_o              (usb_busreset        )
-    //         ,.highspeed_o           (usb_highspeed       )
-    //         ,.suspend_o             (usb_suspend         )
-    //         ,.online_o              (usb_online          )
-    //         //,.iso_pid_i           (usb_iso_pid           )//
-    //         ,.txdat_i             (usb_txdat           )//
-    //         ,.txval_i             (usb_txval           )//endpt0_send
-    //         ,.txdat_len_i         (txdat_len           )//
-    //         ,.txiso_pid_i         (iso_pid_data        )//
-    //         ,.txcork_i            (usb_txcork          )//usb_txcork
-    //         ,.txpop_o             (usb_txpop           )
-    //         ,.txact_o             (usb_txact           )
-    //         ,.rxdat_o             (usb_rxdat           )
-    //         ,.rxval_o             (usb_rxval           )
-    //         ,.rxact_o             (usb_rxact           )
-    //         ,.rxrdy_i             (1'b1                )
-    //         ,.rxpktval_o          (rxpktval            )
-    //         ,.setup_o             (setup_active        )
-    //         ,.endpt_o             (endpt_sel           )
-    //         ,.sof_o               (usb_sof             )
-    //         ,.inf_alter_i         (interface_alter_i   )
-    //         ,.inf_alter_o         (interface_alter_o   )
-    //         ,.inf_sel_o           (interface_sel       )
-    //         ,.inf_set_o           (interface_update    )
-    //         ,.descrom_rdata_i     (DESCROM_RDAT        )
-    //         ,.descrom_raddr_o     (DESCROM_RADDR       )
-    //         ,.desc_dev_addr_i       (DESC_DEV_ADDR       )
-    //         ,.desc_dev_len_i        (DESC_DEV_LEN        )
-    //         ,.desc_qual_addr_i      (DESC_QUAL_ADDR      )
-    //         ,.desc_qual_len_i       (DESC_QUAL_LEN       )
-    //         ,.desc_fscfg_addr_i     (DESC_FSCFG_ADDR     )
-    //         ,.desc_fscfg_len_i      (DESC_FSCFG_LEN      )
-    //         ,.desc_hscfg_addr_i     (DESC_HSCFG_ADDR     )
-    //         ,.desc_hscfg_len_i      (DESC_HSCFG_LEN      )
-    //         ,.desc_oscfg_addr_i     (DESC_OSCFG_ADDR     )
-    //         ,.desc_strlang_addr_i   (DESC_STRLANG_ADDR   )
-    //         ,.desc_strvendor_addr_i (DESC_STRVENDOR_ADDR )
-    //         ,.desc_strvendor_len_i  (DESC_STRVENDOR_LEN  )
-    //         ,.desc_strproduct_addr_i(DESC_STRPRODUCT_ADDR)
-    //         ,.desc_strproduct_len_i (DESC_STRPRODUCT_LEN )
-    //         ,.desc_strserial_addr_i (DESC_STRSERIAL_ADDR )
-    //         ,.desc_strserial_len_i  (DESC_STRSERIAL_LEN  )
-    //         ,.desc_have_strings_i   (DESCROM_HAVE_STRINGS)
-
-    //         ,.utmi_dataout_o        (PHY_DATAOUT       )
-    //         ,.utmi_txvalid_o        (PHY_TXVALID       )
-    //         ,.utmi_txready_i        (PHY_TXREADY       )
-    //         ,.utmi_datain_i         (PHY_DATAIN        )
-    //         ,.utmi_rxactive_i       (PHY_RXACTIVE      )
-    //         ,.utmi_rxvalid_i        (PHY_RXVALID       )
-    //         ,.utmi_rxerror_i        (PHY_RXERROR       )
-    //         ,.utmi_linestate_i      (PHY_LINESTATE     )
-    //         ,.utmi_opmode_o         (PHY_OPMODE        )
-    //         ,.utmi_xcvrselect_o     (PHY_XCVRSELECT    )
-    //         ,.utmi_termselect_o     (PHY_TERMSELECT    )
-    //         ,.utmi_reset_o          (PHY_RESET         )
-    //      );
-
 USB_Device_Controller_Top u_usb_device_controller_top (
-    .clk_i                 (PHY_CLKOUT          ),
-    .reset_i               (RESET_IN            ),
-    .usbrst_o              (usb_busreset        ),
-    .highspeed_o           (usb_highspeed       ),
-    .suspend_o             (usb_suspend         ),
-    .online_o              (usb_online          ),
-    // .iso_pid_i             (usb_iso_pid         ),//
-    .txdat_i               (usb_txdat           ),//
-    .txval_i               (usb_txval           ),//endpt0_send
-    .txdat_len_i           (txdat_len           ),//
-    .txiso_pid_i           (iso_pid_data        ),//
-    .txcork_i              (usb_txcork          ),//usb_txcork
-    .txpop_o               (usb_txpop           ),
-    .txact_o               (usb_txact           ),
-    .rxdat_o               (usb_rxdat           ),
-    .rxval_o               (usb_rxval           ),
-    .rxact_o               (usb_rxact           ),
-    .rxrdy_i               (1'b1                ),
-    .rxpktval_o            (rxpktval            ),
-    .setup_o               (setup_active        ),
-    .endpt_o               (endpt_sel           ),
-    .sof_o                 (usb_sof             ),
-    .inf_alter_i           (interface_alter_i   ),
-    .inf_alter_o           (interface_alter_o   ),
-    .inf_sel_o             (interface_sel       ),
-    .inf_set_o             (interface_update    ),
-    .descrom_rdata_i       (DESCROM_RDAT        ),
-    .descrom_raddr_o       (DESCROM_RADDR       ),
-    .desc_dev_addr_i       (DESC_DEV_ADDR       ),
-    .desc_dev_len_i        (DESC_DEV_LEN        ),
-    .desc_qual_addr_i      (DESC_QUAL_ADDR      ),
-    .desc_qual_len_i       (DESC_QUAL_LEN       ),
-    .desc_fscfg_addr_i     (DESC_FSCFG_ADDR     ),
-    .desc_fscfg_len_i      (DESC_FSCFG_LEN      ),
-    .desc_hscfg_addr_i     (DESC_HSCFG_ADDR     ),
-    .desc_hscfg_len_i      (DESC_HSCFG_LEN      ),
-    .desc_oscfg_addr_i     (DESC_OSCFG_ADDR     ),
-    .desc_strlang_addr_i   (DESC_STRLANG_ADDR   ),
-    .desc_strvendor_addr_i (DESC_STRVENDOR_ADDR ),
-    .desc_strvendor_len_i  (DESC_STRVENDOR_LEN  ),
-    .desc_strproduct_addr_i(DESC_STRPRODUCT_ADDR),
-    .desc_strproduct_len_i (DESC_STRPRODUCT_LEN ),
-    .desc_strserial_addr_i (DESC_STRSERIAL_ADDR ),
-    .desc_strserial_len_i  (DESC_STRSERIAL_LEN  ),
-    .desc_have_strings_i   (DESCROM_HAVE_STRINGS),
-    
-    .utmi_dataout_o        (PHY_DATAOUT         ),
-    .utmi_txvalid_o        (PHY_TXVALID         ),
-    .utmi_txready_i        (PHY_TXREADY         ),
-    .utmi_datain_i         (PHY_DATAIN          ),
-    .utmi_rxactive_i       (PHY_RXACTIVE        ),
-    .utmi_rxvalid_i        (PHY_RXVALID         ),
-    .utmi_rxerror_i        (PHY_RXERROR         ),
-    .utmi_linestate_i      (PHY_LINESTATE       ),
-    .utmi_opmode_o         (PHY_OPMODE          ),
-    .utmi_xcvrselect_o     (PHY_XCVRSELECT      ),
-    .utmi_termselect_o     (PHY_TERMSELECT      ),
-    .utmi_reset_o          (PHY_RESET           )
+    .clk_i                 (PHY_CLKOUT          )
+   ,.reset_i               (RESET_IN            )
+   ,.usbrst_o              (usb_busreset        )
+   ,.highspeed_o           (usb_highspeed       )
+   ,.suspend_o             (usb_suspend         )
+   ,.online_o              (usb_online          )
+   //,.iso_pid_i           (usb_iso_pid           )//
+   ,.txdat_i             (usb_txdat           )//
+   ,.txval_i             (usb_txval           )//endpt0_send
+   ,.txdat_len_i         (txdat_len           )//
+   ,.txiso_pid_i         (iso_pid_data        )//
+   ,.txcork_i            (usb_txcork          )//usb_txcork
+   ,.txpop_o             (usb_txpop           )
+   ,.txact_o             (usb_txact           )
+   ,.rxdat_o             (usb_rxdat           )
+   ,.rxval_o             (usb_rxval           )
+   ,.rxact_o             (usb_rxact           )
+   ,.rxrdy_i             (1'b1                )
+   ,.rxpktval_o          (rxpktval            )
+   ,.setup_o             (setup_active        )
+   ,.endpt_o             (endpt_sel           )
+   ,.sof_o               (usb_sof             )
+   ,.inf_alter_i         (interface_alter_i   )
+   ,.inf_alter_o         (interface_alter_o   )
+   ,.inf_sel_o           (interface_sel       )
+   ,.inf_set_o           (interface_update    )
+   ,.descrom_rdata_i     (DESCROM_RDAT        )
+   ,.descrom_raddr_o     (DESCROM_RADDR       )
+   ,.desc_dev_addr_i       (DESC_DEV_ADDR       )
+   ,.desc_dev_len_i        (DESC_DEV_LEN        )
+   ,.desc_qual_addr_i      (DESC_QUAL_ADDR      )
+   ,.desc_qual_len_i       (DESC_QUAL_LEN       )
+   ,.desc_fscfg_addr_i     (DESC_FSCFG_ADDR     )
+   ,.desc_fscfg_len_i      (DESC_FSCFG_LEN      )
+   ,.desc_hscfg_addr_i     (DESC_HSCFG_ADDR     )
+   ,.desc_hscfg_len_i      (DESC_HSCFG_LEN      )
+   ,.desc_oscfg_addr_i     (DESC_OSCFG_ADDR     )
+   ,.desc_strlang_addr_i   (DESC_STRLANG_ADDR   )
+   ,.desc_strvendor_addr_i (DESC_STRVENDOR_ADDR )
+   ,.desc_strvendor_len_i  (DESC_STRVENDOR_LEN  )
+   ,.desc_strproduct_addr_i(DESC_STRPRODUCT_ADDR)
+   ,.desc_strproduct_len_i (DESC_STRPRODUCT_LEN )
+   ,.desc_strserial_addr_i (DESC_STRSERIAL_ADDR )
+   ,.desc_strserial_len_i  (DESC_STRSERIAL_LEN  )
+   ,.desc_have_strings_i   (DESCROM_HAVE_STRINGS)
+
+   ,.utmi_dataout_o        (PHY_DATAOUT       )
+   ,.utmi_txvalid_o        (PHY_TXVALID       )
+   ,.utmi_txready_i        (PHY_TXREADY       )
+   ,.utmi_datain_i         (PHY_DATAIN        )
+   ,.utmi_rxactive_i       (PHY_RXACTIVE      )
+   ,.utmi_rxvalid_i        (PHY_RXVALID       )
+   ,.utmi_rxerror_i        (PHY_RXERROR       )
+   ,.utmi_linestate_i      (PHY_LINESTATE     )
+   ,.utmi_opmode_o         (PHY_OPMODE        )
+   ,.utmi_xcvrselect_o     (PHY_XCVRSELECT    )
+   ,.utmi_termselect_o     (PHY_TERMSELECT    )
+   ,.utmi_reset_o          (PHY_RESET         )
 );
+
     
     wire [7:0] ulpi_out_w;
     wire [7:0] ulpi_in_w;
@@ -606,8 +546,8 @@ USB_Device_Controller_Top u_usb_device_controller_top (
 
     ulpi_wrapper 
     u_ulpi_wrapper(
-    	.ulpi_clk60_i      (~ulpi_clk          ),
-        .ulpi_rst_i        (RESET             ),
+    	.ulpi_clk60_i      (~ulpi_clk         ),
+        .ulpi_rst_i        (RESET_IN          ),
         .ulpi_data_out_i   (ulpi_in_w         ),
         .ulpi_dir_i        (ulpi_dir          ),
         .ulpi_nxt_i        (ulpi_nxt          ),
@@ -802,90 +742,90 @@ always @(posedge PHY_CLKOUT,posedge RESET_IN) begin
             end
         end
         else if (bRequest == `SET_CUR) begin
-            stage <= 8'd0;
-            if (wIndex[7:0] == 8'h01) begin
-                if (wValue[15:8] == `VS_PROBE_CONTROL) begin
-                    if ((usb_rxact)&&(endpt_sel == 4'd0)) begin
-                        if (usb_rxval) begin
-                            sub_stage <= sub_stage + 8'd1;
-                            case (sub_stage)
-                                8'd0 :
-                                    bmHint[7:0] <= usb_rxdat;
-                                8'd1 :
-                                    bmHint[15:8] <= usb_rxdat;
-                                8'd2 :
-                                    bFormatIndex[7:0] <= usb_rxdat;
-                                8'd3 :
-                                    bFrameIndex[7:0] <= usb_rxdat;
-                                8'd4 :
-                                    dwFrameInterval[7:0]  <= usb_rxdat;
-                                8'd5 :
-                                    dwFrameInterval[15:8] <= usb_rxdat;
-                                8'd6 :
-                                    dwFrameInterval[23:16] <= usb_rxdat;
-                                8'd7 :
-                                    dwFrameInterval[31:24] <= usb_rxdat;
-                                8'd8 :
-                                    wKeyFrameRate[7:0] <= usb_rxdat;
-                                8'd9 :
-                                    wKeyFrameRate[15:8] <= usb_rxdat;
-                                8'd10 :
-                                    wPFrameRate[7:0] <= usb_rxdat;
-                                8'd11 :
-                                    wPFrameRate[15:8]<= usb_rxdat;
-                                8'd12 :
-                                    wCompQuality[7:0] <= usb_rxdat;
-                                8'd13 :
-                                    wCompQuality[15:8] <= usb_rxdat;
-                                8'd14 :
-                                    wCompWindowSize[7:0] <= usb_rxdat;
-                                8'd15 :
-                                    wCompWindowSize[15:8] <= usb_rxdat;
-                                8'd16 :
-                                    wDelay[7:0] <= usb_rxdat;
-                                8'd17 :
-                                    wDelay[15:8] <= usb_rxdat;
-                                8'd18 :
-                                    dwMaxVideoFrameSize[7:0]  <= usb_rxdat;
-                                8'd19 :
-                                    dwMaxVideoFrameSize[15:8] <= usb_rxdat;
-                                8'd20 :
-                                    dwMaxVideoFrameSize[23:16] <= usb_rxdat;
-                                8'd21 :
-                                    dwMaxVideoFrameSize[31:24] <= usb_rxdat;
-                                8'd22 :
-                                    ;//dwMaxPayloadTransferSize[7:0]  <= usb_rxdat;
-                                8'd23 :
-                                    ;//dwMaxPayloadTransferSize[15:8] <= usb_rxdat;
-                                8'd24 :
-                                    ;//dwMaxPayloadTransferSize[23:16] <= usb_rxdat;
-                                8'd25 :
-                                    ;//dwMaxPayloadTransferSize[31:24] <= usb_rxdat;
-                                8'd26 :
-                                    dwClockFrequency[7:0]  <= usb_rxdat;
-                                8'd27 :
-                                    dwClockFrequency[15:8] <= usb_rxdat;
-                                8'd28 :
-                                    dwClockFrequency[23:16] <= usb_rxdat;
-                                8'd29 :
-                                    dwClockFrequency[31:24] <= usb_rxdat;
-                                8'd30 :
-                                    bmFramingInfo[7:0] <= usb_rxdat;
-                                8'd31 :
-                                    bPreferedVersion[7:0] <= usb_rxdat;
-                                8'd32 :
-                                    bMinVersion[7:0] <= usb_rxdat;
-                                8'd33 :
-                                    bMaxVersion[7:0] <= usb_rxdat;
-                                default : ;
-                            endcase
-                        end
-                    end
-                    else begin
-                        sub_stage <= 8'd0;
-                    end
-                end
-            end
+            // stage <= 8'd0;
+            // if (wIndex[7:0] == 8'h01) begin
+            //     if (wValue[15:8] == `VS_PROBE_CONTROL) begin
+            //         if ((usb_rxact)&&(endpt_sel == 4'd0)) begin
+            //             if (usb_rxval) begin
+            //                 sub_stage <= sub_stage + 8'd1;
+            //                 case (sub_stage)
+            //                     8'd0 :
+            //                         bmHint[7:0] <= usb_rxdat;
+            //                     8'd1 :
+            //                         bmHint[15:8] <= usb_rxdat;
+            //                     8'd2 :
+            //                         bFormatIndex[7:0] <= usb_rxdat;
+            //                     8'd3 :
+            //                         bFrameIndex[7:0] <= usb_rxdat;
+            //                     8'd4 :
+            //                         dwFrameInterval[7:0]  <= usb_rxdat;
+            //                     8'd5 :
+            //                         dwFrameInterval[15:8] <= usb_rxdat;
+            //                     8'd6 :
+            //                         dwFrameInterval[23:16] <= usb_rxdat;
+            //                     8'd7 :
+            //                         dwFrameInterval[31:24] <= usb_rxdat;
+            //                     8'd8 :
+            //                         wKeyFrameRate[7:0] <= usb_rxdat;
+            //                     8'd9 :
+            //                         wKeyFrameRate[15:8] <= usb_rxdat;
+            //                     8'd10 :
+            //                         wPFrameRate[7:0] <= usb_rxdat;
+            //                     8'd11 :
+            //                         wPFrameRate[15:8]<= usb_rxdat;
+            //                     8'd12 :
+            //                         wCompQuality[7:0] <= usb_rxdat;
+            //                     8'd13 :
+            //                         wCompQuality[15:8] <= usb_rxdat;
+            //                     8'd14 :
+            //                         wCompWindowSize[7:0] <= usb_rxdat;
+            //                     8'd15 :
+            //                         wCompWindowSize[15:8] <= usb_rxdat;
+            //                     8'd16 :
+            //                         wDelay[7:0] <= usb_rxdat;
+            //                     8'd17 :
+            //                         wDelay[15:8] <= usb_rxdat;
+            //                     8'd18 :
+            //                         dwMaxVideoFrameSize[7:0]  <= usb_rxdat;
+            //                     8'd19 :
+            //                         dwMaxVideoFrameSize[15:8] <= usb_rxdat;
+            //                     8'd20 :
+            //                         dwMaxVideoFrameSize[23:16] <= usb_rxdat;
+            //                     8'd21 :
+            //                         dwMaxVideoFrameSize[31:24] <= usb_rxdat;
+            //                     8'd22 :
+            //                         ;//dwMaxPayloadTransferSize[7:0]  <= usb_rxdat;
+            //                     8'd23 :
+            //                         ;//dwMaxPayloadTransferSize[15:8] <= usb_rxdat;
+            //                     8'd24 :
+            //                         ;//dwMaxPayloadTransferSize[23:16] <= usb_rxdat;
+            //                     8'd25 :
+            //                         ;//dwMaxPayloadTransferSize[31:24] <= usb_rxdat;
+            //                     8'd26 :
+            //                         dwClockFrequency[7:0]  <= usb_rxdat;
+            //                     8'd27 :
+            //                         dwClockFrequency[15:8] <= usb_rxdat;
+            //                     8'd28 :
+            //                         dwClockFrequency[23:16] <= usb_rxdat;
+            //                     8'd29 :
+            //                         dwClockFrequency[31:24] <= usb_rxdat;
+            //                     8'd30 :
+            //                         bmFramingInfo[7:0] <= usb_rxdat;
+            //                     8'd31 :
+            //                         bPreferedVersion[7:0] <= usb_rxdat;
+            //                     8'd32 :
+            //                         bMinVersion[7:0] <= usb_rxdat;
+            //                     8'd33 :
+            //                         bMaxVersion[7:0] <= usb_rxdat;
+            //                     default : ;
+            //                 endcase
+            //             end
+            //         end
+            //         else begin
+            //             sub_stage <= 8'd0;
+            //         end
+            //     end
+            // end
         end
         //else if ((bRequest == `SET_CUR)||(bRequest == `GET_CUR)||(bRequest == `GET_DEF)) begin
         else if ((bRequest == `GET_CUR)||(bRequest == `GET_DEF)) begin
