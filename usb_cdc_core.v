@@ -35,7 +35,8 @@
 //-----------------------------------------------------------------
 //                          Generated File
 //-----------------------------------------------------------------
-
+`include "usb_defs.v"
+`include "uvc_defs.v"
 module usb_cdc_core
 (
     // Inputs
@@ -50,7 +51,10 @@ module usb_cdc_core
     ,input  [  1:0]  utmi_linestate_i
     ,input           inport_valid_i
     ,input  [  7:0]  inport_data_i
-    ,input           outport_accept_i
+    ,input  [  9:0]  inport_len_i
+    ,input  [  1:0]  iso_pid_sel_i
+    ,input  [  7:0]  frame_i
+    ,input  [ 31:0]  pts_i
 
     // Outputs
     ,output [  7:0]  utmi_data_out_o
@@ -60,9 +64,9 @@ module usb_cdc_core
     ,output          utmi_termselect_o
     ,output          utmi_dppulldown_o
     ,output          utmi_dmpulldown_o
+    ,output          sof_o
     ,output          inport_accept_o
-    ,output          outport_valid_o
-    ,output [  7:0]  outport_data_o
+    ,output          txact_o
 );
 
 
@@ -157,21 +161,32 @@ parameter USB_SPEED_HS = "True"; // True or False
 `define CDC_SET_CONTROL_LINE_STATE      8'h22
 `define CDC_SEND_BREAK                  8'h23
 
+`define UVC_GET_CONFIGURATION           8'h81
+
+function  [31:0] toLittleEndian_4byte;
+    input [31:0] value;
+begin
+    toLittleEndian_4byte = {value[7:0], value[15:8], value[23:16], value[31:24]};
+end
+endfunction
+
 // Descriptor ROM offsets / sizes
-`define ROM_DESC_DEVICE_ADDR            8'd0
-`define ROM_DESC_DEVICE_SIZE            16'd18
-`define ROM_DESC_CONF_ADDR              8'd18
-`define ROM_DESC_CONF_SIZE              16'd67
-`define ROM_DESC_STR_LANG_ADDR          8'd85
-`define ROM_DESC_STR_LANG_SIZE          16'd4
-`define ROM_DESC_STR_MAN_ADDR           8'd89
-`define ROM_DESC_STR_MAN_SIZE           16'd30
-`define ROM_DESC_STR_PROD_ADDR          8'd119
-`define ROM_DESC_STR_PROD_SIZE          16'd30
-`define ROM_DESC_STR_SERIAL_ADDR        8'd149
-`define ROM_DESC_STR_SERIAL_SIZE        16'd14
-`define ROM_CDC_LINE_CODING_ADDR        8'd163
-`define ROM_CDC_LINE_CODING_SIZE        16'd7
+wire [7:0]          DESC_DEVICE_ADDR    ;       // 8'd0
+wire [15:0]         DESC_DEVICE_SIZE    ;       // 16'd18
+wire [7:0]          DESC_CONF_ADDR      ;       // 8'd18
+wire [15:0]         DESC_CONF_SIZE      ;       // 16'd67
+wire [7:0]          DESC_STR_LANG_ADDR  ;       // 8'd85
+wire [15:0]         DESC_STR_LANG_SIZE  ;       // 16'd4
+wire [7:0]          DESC_STR_MAN_ADDR   ;       // 8'd89
+wire [15:0]         DESC_STR_MAN_SIZE   ;       // 16'd30
+wire [7:0]          DESC_STR_PROD_ADDR  ;       // 8'd119
+wire [15:0]         DESC_STR_PROD_SIZE  ;       // 16'd30
+wire [7:0]          DESC_STR_SERIAL_ADDR;       // 8'd149
+wire [15:0]         DESC_STR_SERIAL_SIZE;       // 16'd14
+wire [7:0]          CDC_LINE_CODING_ADDR;       // 8'd163
+wire [15:0]         CDC_LINE_CODING_SIZE;       // 16'd7
+
+assign DESC_STR_LANG_SIZE = 16'd4;
 
 //-----------------------------------------------------------------
 // Wires
@@ -293,11 +308,18 @@ reg [`USB_RST_W-1:0] usb_rst_time_q;
 reg [7:0]            chirp_count_q;
 reg [1:0]            last_linestate_q;
 
+`define USB_RESUME_W  21
+`define USB_SUSPEND_W  20
+reg [`USB_RESUME_W-1:0] usb_resume_time_q;
+reg [`USB_SUSPEND_W-1:0] usb_suspend_time_q;
+
 localparam DETACH_TIME    = 20'd60000;  // 1ms -> T0
 localparam ATTACH_FS_TIME = 20'd180000; // T0 + 3ms = T1
 localparam CHIRPK_TIME    = 20'd246000; // T1 + ~1ms
 localparam HS_RESET_TIME  = 20'd600000; // T0 + 10ms = T9
 localparam HS_CHIRP_COUNT = 8'd5;
+
+localparam SUSPEND_TIME   = 20'd180000; // 3ms
 
 reg [  1:0]  utmi_op_mode_r;
 reg [  1:0]  utmi_xcvrselect_r;
@@ -374,7 +396,9 @@ begin
         utmi_dmpulldown_r = 1'b0;
 
         // USB reset detected...
-        if (usb_rst_time_q >= HS_RESET_TIME && usb_reset_w)
+        if (usb_resume_time_q[`USB_RESUME_W-1])
+            next_state_r = STATE_HIGHSPEED;
+        else if (usb_suspend_time_q >= HS_RESET_TIME)
             next_state_r = STATE_WAIT_RST;
     end
     STATE_HIGHSPEED:
@@ -388,8 +412,8 @@ begin
 
         // Long SE0 - could be reset or suspend
         // TODO: Should revert to FS mode and check...
-        if (usb_rst_time_q >= HS_RESET_TIME && usb_reset_w)
-            next_state_r = STATE_WAIT_RST;
+        if (usb_suspend_time_q >= SUSPEND_TIME)
+            next_state_r = STATE_FULLSPEED;
     end
     default:
         ;
@@ -415,6 +439,24 @@ else if (state_q == STATE_WAIT_RST && (utmi_linestate_i != 2'b00))
     usb_rst_time_q <=  `USB_RST_W'b0;
 else if (usb_rst_time_q != {(`USB_RST_W){1'b1}})
     usb_rst_time_q <= usb_rst_time_q + `USB_RST_W'd1;
+
+always @(posedge clk_i or posedge rst_i) begin
+if(rst_i)
+    usb_resume_time_q <= 0;
+else if(state_q == STATE_FULLSPEED && utmi_linestate_i == 2'b10)
+    usb_resume_time_q <= usb_resume_time_q + `USB_RESUME_W'd1;
+else
+    usb_resume_time_q <= 0;
+end
+
+always @(posedge clk_i or posedge rst_i) begin
+if(rst_i)
+    usb_suspend_time_q <= 0;
+else if(utmi_linestate_i == 2'b00)
+    usb_suspend_time_q <= usb_suspend_time_q + `USB_SUSPEND_W'd1;
+else
+    usb_suspend_time_q <= 0;
+end
 
 always @ (posedge clk_i or posedge rst_i)
 if (rst_i)
@@ -493,7 +535,7 @@ u_core
     .clk_i(clk_i),
     .rst_i(rst_i),
 
-    .intr_o(),
+    .intr_o(sof_o),
 
     // UTMI interface
     .utmi_data_o(utmi_data_out_o),
@@ -506,7 +548,7 @@ u_core
     .utmi_linestate_i(utmi_linestate_i),
 
     .reg_chirp_en_i(utmi_chirp_en_w),
-    .reg_int_en_sof_i(1'b0),
+    .reg_int_en_sof_i(1'b1),
 
     .reg_dev_addr_i(device_addr_q),
 
@@ -555,7 +597,7 @@ u_core
     .ep1_tx_data_accept_o(ep1_tx_data_accept_w),
 
     // EP2 Config
-    .ep2_iso_i(1'b0),
+    .ep2_iso_i(1'b1),
     .ep2_stall_i(ep2_tx_stall_w),
     .ep2_cfg_int_rx_i(1'b0),
     .ep2_cfg_int_tx_i(1'b0),
@@ -595,7 +637,9 @@ u_core
     // Status
     .reg_sts_rst_clr_i(1'b1),
     .reg_sts_rst_o(usb_reset_w),
-    .reg_sts_frame_num_o()
+    .reg_sts_frame_num_o(),
+    .txact_o(txact_o),
+    .iso_pid_init_i(iso_pid_sel_i)
 );
 
 assign ep0_rx_space_w = 1'b1;
@@ -688,6 +732,9 @@ reg        ctrl_stall_r; // Send STALL
 reg        ctrl_ack_r;   // Send STATUS (ZLP)
 reg [15:0] ctrl_get_len_r;
 
+reg        ctrl_resp_r;
+reg        ctrl_resp_q;
+
 reg [7:0]  desc_addr_r;
 
 reg        addressed_q;
@@ -701,6 +748,9 @@ reg        set_with_data_q;
 reg        set_with_data_r;
 wire       data_status_zlp_w;
 
+reg        endpt0_send_r;
+reg        endpt0_send_q;
+
 always @ *
 begin
     ctrl_stall_r    = 1'b0;
@@ -711,6 +761,8 @@ begin
     addressed_r     = addressed_q;
     configured_r    = configured_q;
     set_with_data_r = set_with_data_q;
+    ctrl_resp_r     = ctrl_resp_q;
+
 
     if (setup_valid_q)
     begin
@@ -748,36 +800,36 @@ begin
                 case (bDescriptorType_w)
                 `DESC_DEVICE:
                 begin
-                    desc_addr_r    = `ROM_DESC_DEVICE_ADDR;
-                    ctrl_get_len_r = `ROM_DESC_DEVICE_SIZE;
+                    desc_addr_r    = DESC_DEVICE_ADDR;
+                    ctrl_get_len_r = DESC_DEVICE_SIZE;
                 end
                 `DESC_CONFIGURATION:
                 begin
-                    desc_addr_r    = `ROM_DESC_CONF_ADDR;
-                    ctrl_get_len_r = `ROM_DESC_CONF_SIZE;
+                    desc_addr_r    = DESC_CONF_ADDR;
+                    ctrl_get_len_r = DESC_CONF_SIZE;
                 end
                 `DESC_STRING:
                 begin
                     case (bDescriptorIndex_w)
                     `UNICODE_LANGUAGE_STR_ID:
                     begin
-                        desc_addr_r    = `ROM_DESC_STR_LANG_ADDR;
-                        ctrl_get_len_r = `ROM_DESC_STR_LANG_SIZE;
+                        desc_addr_r    = DESC_STR_LANG_ADDR;
+                        ctrl_get_len_r = DESC_STR_LANG_SIZE;
                     end
                     `MANUFACTURER_STR_ID:
                     begin
-                        desc_addr_r    = `ROM_DESC_STR_MAN_ADDR;
-                        ctrl_get_len_r = `ROM_DESC_STR_MAN_SIZE;
+                        desc_addr_r    = DESC_STR_MAN_ADDR;
+                        ctrl_get_len_r = DESC_STR_MAN_SIZE;
                     end
                     `PRODUCT_NAME_STR_ID:
                     begin
-                        desc_addr_r    = `ROM_DESC_STR_PROD_ADDR;
-                        ctrl_get_len_r = `ROM_DESC_STR_PROD_SIZE;
+                        desc_addr_r    = DESC_STR_PROD_ADDR;
+                        ctrl_get_len_r = DESC_STR_PROD_SIZE;
                     end
                     `SERIAL_NUM_STR_ID:
                     begin
-                        desc_addr_r    = `ROM_DESC_STR_SERIAL_ADDR;
-                        ctrl_get_len_r = `ROM_DESC_STR_SERIAL_SIZE;
+                        desc_addr_r    = DESC_STR_SERIAL_ADDR;
+                        ctrl_get_len_r = DESC_STR_SERIAL_SIZE;
                     end
                     default:
                         ;
@@ -795,13 +847,13 @@ begin
             begin
                 $display("SET_CONF: Configuration %x", wValue_w);
 
-                if (wValue_w == 16'd0)
+                if (wValue_w[7:0] == 8'd0)
                 begin
                     configured_r = 1'b0;
                     ctrl_ack_r   = setup_set_w && setup_no_data_w;
                 end
                 // Only support one configuration for now
-                else if (wValue_w == 16'd1)
+                else if (wValue_w[7:0] == 8'd1)
                 begin
                     configured_r = 1'b1;
                     ctrl_ack_r   = setup_set_w && setup_no_data_w;
@@ -817,7 +869,7 @@ begin
             `REQ_SET_INTERFACE:
             begin
                 $display("SET_INTERFACE: %x %x", wValue_w, wIndex_w);
-                if (wValue_w == 16'd0 && wIndex_w == 16'd0)
+                if ((wValue_w[7:0] == 8'd0 || wValue_w[7:0] == 8'd1) && wIndex_w[7:0] == 8'd1)
                     ctrl_ack_r   = setup_set_w && setup_no_data_w;
                 else
                     ctrl_stall_r = 1'b1;
@@ -835,19 +887,15 @@ begin
         end
         `USB_CLASS_REQUEST:
         begin
-            case (bRequest_w)
-            `CDC_GET_LINE_CODING:
-            begin
-                $display("CDC_GET_LINE_CODING");
-                desc_addr_r    = `ROM_CDC_LINE_CODING_ADDR;
-                ctrl_get_len_r = `ROM_CDC_LINE_CODING_SIZE;
+            if (bRequest_w == `UVC_GET_CONFIGURATION && wIndex_w[7:0] == 8'd1 && wValue_w[15:8] == 8'd1)begin
+                $display("UVC_GET_CONFIGURATION");
+                ctrl_resp_r    = 1'b1;
+                ctrl_get_len_r = 'd34;
             end
-            default:
-            begin
-                ctrl_ack_r      = setup_set_w && setup_no_data_w;
+            else begin
+                ctrl_ack_r      = 1'b1;
                 set_with_data_r = setup_set_w && !setup_no_data_w;
             end
-            endcase
         end
         default:
         begin
@@ -869,7 +917,6 @@ begin
 end
 else if (usb_reset_w)
 begin
-    device_addr_q   <= 7'b0;
     addressed_q     <= 1'b0;
     configured_q    <= 1'b0;
     set_with_data_q <= 1'b0;
@@ -971,7 +1018,7 @@ begin
     begin
         // TODO: Send ZLP on exact multiple lengths...
         ctrl_txvalid_r  = 1'b1;
-        ctrl_txdata_r   = desc_data_w;
+        ctrl_txdata_r   = ctrl_resp_q ? ep00_resp : desc_data_w;
         ctrl_txstrb_r   = 1'b1;
         ctrl_txlast_r   = usb_hs_w ? (ctrl_send_idx_r[5:0] == 6'b111111) : (ctrl_send_idx_r[2:0] == 3'b111);
 
@@ -1003,6 +1050,7 @@ begin
     ctrl_txlast_q   <= 1'b0;
     ctrl_txstall_q  <= 1'b0;
     desc_addr_q     <= 8'b0;
+    ctrl_resp_q     <= 1'b0;
 end
 else if (usb_reset_w)
 begin
@@ -1015,6 +1063,7 @@ begin
     ctrl_txlast_q   <= 1'b0;
     ctrl_txstall_q  <= 1'b0;
     desc_addr_q     <= 8'b0;
+    ctrl_resp_q     <= 1'b0;
 end
 else
 begin
@@ -1031,6 +1080,11 @@ begin
         desc_addr_q     <= desc_addr_r;
     else if (ctrl_sending_r && ctrl_send_accept_w)
         desc_addr_q     <= desc_addr_q + 8'd1;
+
+    if(ctrl_resp_q && ~ctrl_sending_r)
+        ctrl_resp_q     <= 1'b0;
+    else
+        ctrl_resp_q     <= ctrl_resp_r;
 end
 
 assign ep0_tx_ready_w      = ctrl_txvalid_q;
@@ -1043,13 +1097,79 @@ assign ep0_tx_stall_w      = ctrl_txstall_q;
 //-----------------------------------------------------------------
 // Descriptor ROM
 //-----------------------------------------------------------------
-usb_desc_rom
-u_rom
-(
-    .hs_i(usb_hs_w),
-    .addr_i(desc_addr_q),
-    .data_o(desc_data_w)
+
+reg [34*8-1:0] UVC_PROBE_COMMIT = {
+    16'h00_00,                                                     // bmHint
+     8'h01,                                                        // bFormatIndex
+     8'h01,                                                        // bFrameIndex
+    toLittleEndian_4byte(`FRAME_INTERVAL),                         // dwFrameInterval
+    16'h00_00,                                                     // wKeyFrameRate    : ignored by uncompressed video
+    16'h00_00,                                                     // wPFrameRate      : ignored by uncompressed video
+    16'h00_00,                                                     // wCompQuality     : ignored by uncompressed video
+    16'h00_00,                                                     // wCompWindowSize  : ignored by uncompressed video
+    16'h00_00,                                                     // wDelay (ms)
+    toLittleEndian_4byte(`MAX_FRAME_SIZE),                         // dwMaxVideoFrameSize
+    toLittleEndian_4byte({32'd1024}),                              // dwMaxPayloadTransferSize
+    toLittleEndian_4byte({32'd60000000}),                          // dwClockFrequency
+     8'h00,                                                        // bmFramingInfo
+     8'h00,                                                        // bPreferedVersion
+     8'h00,                                                        // bMinVersion
+     8'h00                                                         // bMaxVersion
+};
+
+reg  [ 7:0] ep00_resp;
+
+always @ (posedge clk_i)
+    if ((bmRequestType_w[7:0] == 8'hA1) && wIndex_w[7:0] == 8'd1 && wValue_w[15:8] == 8'd1)
+        ep00_resp <= UVC_PROBE_COMMIT[ (34 - 1 - ctrl_send_idx_r) * 8 +: 8 ];
+    else
+        ep00_resp <= 8'h0;
+
+
+//-----------------------------------------------------------------
+// Descriptor ROM
+//-----------------------------------------------------------------
+// usb_desc_rom
+// u_rom
+// (
+//     .hs_i(usb_hs_w),
+//     .addr_i(desc_addr_q),
+//     .data_o(desc_data_w)
+// );
+
+usb_desc
+#(
+
+         .VENDORID    (16'h33AA)//0403   08bb
+        ,.PRODUCTID   (16'h0200)//6010   27c6
+        ,.VERSIONBCD  (16'h0200)
+        ,.HSSUPPORT   (1)
+        ,.SELFPOWERED (0)
+)
+u_usb_desc (
+         .CLK                    (clk_i               )
+        ,.RESET                  (rst_i               )
+        ,.i_descrom_raddr        (desc_addr_q         )
+        ,.o_descrom_rdat         (desc_data_w         )
+        ,.o_desc_dev_addr        (DESC_DEVICE_ADDR    )
+        ,.o_desc_dev_len         (DESC_DEVICE_SIZE    )
+        ,.o_desc_qual_addr       (DESC_QUAL_ADDR      )
+        ,.o_desc_qual_len        (DESC_QUAL_LEN       )
+        ,.o_desc_fscfg_addr      (DESC_CONF_ADDR      )
+        ,.o_desc_fscfg_len       (DESC_CONF_SIZE      )
+        ,.o_desc_hscfg_addr      (                    )
+        ,.o_desc_hscfg_len       (                    )
+        ,.o_desc_oscfg_addr      (                    )
+        ,.o_desc_strlang_addr    (DESC_STR_LANG_ADDR  )
+        ,.o_desc_strvendor_addr  (DESC_STR_MAN_ADDR   )
+        ,.o_desc_strvendor_len   (DESC_STR_MAN_SIZE   )
+        ,.o_desc_strproduct_addr (DESC_STR_PROD_ADDR  )
+        ,.o_desc_strproduct_len  (DESC_STR_PROD_SIZE  )
+        ,.o_desc_strserial_addr  (DESC_STR_SERIAL_ADDR)
+        ,.o_desc_strserial_len   (DESC_STR_SERIAL_SIZE)
+        ,.o_descrom_have_strings (DESCROM_HAVE_STRINGS)
 );
+
 
 //-----------------------------------------------------------------
 // Unused Endpoints
@@ -1067,50 +1187,112 @@ assign ep3_tx_data_w       = 8'b0;
 assign ep3_tx_data_last_w  = 1'b0;
 assign ep3_tx_stall_w      = 1'b0;
 
+assign ep1_rx_space_w      = 1'b0;
 assign ep2_rx_space_w      = 1'b0;
 assign ep3_rx_space_w      = 1'b0;
+
+//-----------------------------------------------------------------
+// Header Generate
+//-----------------------------------------------------------------
+localparam HERADER_LEN = 12;
+
+reg sof_d0;
+reg sof_d1;
+wire sof_rise;
+always @(posedge clk_i or posedge rst_i) begin
+    if (rst_i) begin
+        sof_d0 <= 1'b0;
+        sof_d1 <= 1'b0;
+    end
+    else begin
+        sof_d0 <= sof_o;
+        sof_d1 <= sof_d0;
+    end
+end
+assign sof_rise = (sof_d0)&(~sof_d1);
+
+reg [10:0] sofCounts;
+reg [10:0] sofCounts_reg;
+reg [3:0] sof_1ms;
+always @(posedge clk_i or posedge rst_i) begin
+    if (rst_i) begin
+        sofCounts <= 11'd0;
+        sof_1ms <= 4'd0;
+    end
+    else begin
+        if (sof_rise) begin
+            if (sof_1ms >= 4'd7) begin
+                sof_1ms <= 4'd0;
+            end
+            else begin
+                sof_1ms <= sof_1ms + 4'd1;
+            end
+        end
+        if ((sof_rise)&&(sof_1ms == 3'd7)) begin
+            sofCounts <= sofCounts + 'd1;
+        end
+    end
+end
 
 //-----------------------------------------------------------------
 // Stream I/O
 //-----------------------------------------------------------------
 reg        inport_valid_q;
-reg [7:0]  inport_data_q;
-reg [10:0] inport_cnt_q;
+reg [9:0]  inport_cnt_q;
+
+reg [7:0]  ep2_tx_data_r;
+reg        pkt_head;
 
 always @ (posedge clk_i or posedge rst_i)
 if (rst_i)
-begin
     inport_valid_q <= 1'b0;
-    inport_data_q  <= 8'b0;
-end
 else if (inport_accept_o)
-begin
     inport_valid_q <= inport_valid_i;
-    inport_data_q  <= inport_data_i;
-end
 
-wire [10:0] max_packet_w   = usb_hs_w ? 11'd511 : 11'd63;
+wire [9:0]  max_packet_w   = inport_len_i;
 wire        inport_last_w  = !inport_valid_i || (inport_cnt_q == max_packet_w);
 
 always @ (posedge clk_i or posedge rst_i)
 if (rst_i)
-    inport_cnt_q  <= 11'b0;
+    inport_cnt_q  <= 10'd0;
 else if (inport_last_w && ep2_tx_data_accept_w)
-    inport_cnt_q  <= 11'b0;
-else if (inport_valid_q && ep2_tx_data_accept_w)
-    inport_cnt_q  <= inport_cnt_q + 11'd1;
+    inport_cnt_q  <= 10'd0;
+else if (ep2_tx_data_valid_w && ep2_tx_data_accept_w)
+    inport_cnt_q  <= inport_cnt_q + 10'd1;
 
-assign ep2_tx_data_valid_w = inport_valid_q;
-assign ep2_tx_data_w       = inport_data_q;
+assign ep2_tx_data_valid_w = inport_valid_q | pkt_head;
+assign ep2_tx_data_w       = ep2_tx_data_r;
 assign ep2_tx_ready_w      = ep2_tx_data_valid_w;
-assign ep2_tx_data_strb_w  = ep2_tx_data_valid_w;
+assign ep2_tx_data_strb_w  = ep2_tx_data_valid_w & ~(inport_len_i == 0);
 assign ep2_tx_data_last_w  = inport_last_w;
-assign inport_accept_o     = !inport_valid_q | ep2_tx_data_accept_w;
+assign ep2_tx_stall_w      = inport_len_i == 0;
+assign inport_accept_o     = !inport_valid_q | (ep2_tx_data_accept_w & ~pkt_head);
 
-assign outport_valid_o  = ep1_rx_valid_w && rx_strb_w;
-assign outport_data_o   = rx_data_w;
-assign ep1_rx_space_w   = outport_accept_i;
+always @ (*)
+if(pkt_head)
+    case (inport_cnt_q)
+        10'd0 : ep2_tx_data_r = HERADER_LEN;
+        10'd1 : ep2_tx_data_r = frame_i;
+        10'd2 : ep2_tx_data_r = pts_i[7:0];     //8'hAE;//8'h11;//
+        10'd3 : ep2_tx_data_r = pts_i[15:8];    //8'h03;//8'h54;//
+        10'd4 : ep2_tx_data_r = pts_i[23:16];   //8'hB4;//8'h72;//
+        10'd5 : ep2_tx_data_r = pts_i[31:24];   //8'h32;//8'h9A;//
+        10'd6 : ep2_tx_data_r = pts_i[7:0];     //8'hAE;//8'h11;//
+        10'd7 : ep2_tx_data_r = pts_i[15:8];    //8'h03;//8'h54;//
+        10'd8 : ep2_tx_data_r = pts_i[23:16];   //8'hB4;//8'h72;//
+        10'd9 : ep2_tx_data_r = pts_i[31:24];   //8'h32;//8'h9A;//
+        10'd10 : ep2_tx_data_r = sofCounts[7:0];            //8'h62;//
+        10'd11 : ep2_tx_data_r = {5'd0,sofCounts[10:8]};    //8'h07;//
+        default: ep2_tx_data_r = inport_data_i;
+    endcase
+else
+    ep2_tx_data_r = inport_data_i;
 
-
+always @(posedge clk_i) begin
+    if(sof_o)
+        pkt_head <= 1;
+    else if(inport_cnt_q == HERADER_LEN-1)
+        pkt_head <= 0;
+end
 
 endmodule

@@ -91,9 +91,11 @@ module usbf_device_core
     ,input           reg_int_en_sof_i
     ,input           reg_sts_rst_clr_i
     ,input  [  6:0]  reg_dev_addr_i
+    ,input  [  1:0]  iso_pid_init_i
 
     // Outputs
     ,output          intr_o
+    ,output          txact_o
     ,output [  7:0]  utmi_data_o
     ,output          utmi_txvalid_o
     ,output          rx_strb_o
@@ -186,6 +188,7 @@ wire                    tx_data_accept_w;
 
 reg                     tx_valid_q;
 reg [7:0]               tx_pid_q;
+reg [1:0]               tx_iso_pid_sel;
 wire                    tx_accept_w;
 
 reg                     rx_space_q;
@@ -397,6 +400,7 @@ assign ep3_rx_setup_o = rx_setup_q & (token_ep_w == 4'd0);
 // Next state
 //-----------------------------------------------------------------
 reg [STATE_W-1:0] next_state_r;
+assign txact_o = state_q == STATE_TX_DATA;
 
 always @ *
 begin
@@ -599,7 +603,15 @@ begin
                 begin
                     tx_valid_r = 1'b1;
                     // TODO: Handle MDATA for ISOs
-                    tx_pid_r   = in_data_bit_r ? `PID_DATA1 : `PID_DATA0;
+                    if(ep_iso_r)
+                        case(tx_iso_pid_sel)
+                            2'd0: tx_pid_r   = `PID_DATA0;
+                            2'd1: tx_pid_r   = `PID_DATA1;
+                            2'd2: tx_pid_r   = `PID_DATA2;
+                            default: tx_pid_r   = `PID_DATA0;
+                        endcase
+                    else
+                        tx_pid_r   = in_data_bit_r ? `PID_DATA1 : `PID_DATA0;
                 end
                 // No data to TX
                 else
@@ -761,8 +773,8 @@ else if (reg_dev_addr_i != current_addr_q)
 always @ (posedge clk_i or posedge rst_i)
 if (rst_i)
     current_addr_q  <= `USB_DEV_W'b0;
-else if (usb_rst_w)
-    current_addr_q  <= `USB_DEV_W'b0;
+// else if (usb_rst_w)
+//     current_addr_q  <= `USB_DEV_W'b0;
 else if (sent_status_zlp_q && addr_update_pending_q && rx_handshake_w && token_pid_w == `PID_ACK)
     current_addr_q  <= reg_dev_addr_i;
 
@@ -897,6 +909,30 @@ begin
     ep3_out_data_bit_q <= new_out_bit_r;
     ep3_in_data_bit_q  <= new_in_bit_r;
 end
+
+//-----------------------------------------------------------------
+// Iso pid toggle
+//-----------------------------------------------------------------
+
+reg sof_r1;
+reg sof_r2;
+
+always @ (posedge clk_i)begin
+    sof_r1 <= frame_valid_w;
+    sof_r2 <= sof_r1;
+end
+
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    tx_iso_pid_sel <= 2'b0;
+else if (sof_r2)
+    tx_iso_pid_sel <= iso_pid_init_i;
+else if (ep_iso_r & tx_data_valid_r & tx_data_last_r & tx_data_accept_w)
+    case(tx_iso_pid_sel)
+        2'd2: tx_iso_pid_sel <= 2'b1;
+        2'd1: tx_iso_pid_sel <= 2'b0;
+        default: tx_iso_pid_sel <= 2'b0;
+    endcase
 
 //-----------------------------------------------------------------
 // Reset event

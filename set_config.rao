@@ -1,0 +1,153 @@
+<?xml version="1" encoding="UTF-8"?>
+<GAO_CONFIG>
+    <Version>3.0</Version>
+    <Mode>Standard</Mode>
+    <AoCore index="0" sample_clock="ulpi_clk60_i" trig_type="0" storage_depth="1024" window_num="1" capture_amount="1024" trigger_pos="0" module_name="usb_serial" force_trigger_by_falling_edge="false">
+        <SignalList>
+            <Bus name="u_usb_cdc_top/u_usb_cdc_core/wValue_w[7:0]">
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[7]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[6]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[5]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[4]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[3]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[2]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[1]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[0]</Signal>
+            </Bus>
+            <Bus name="u_usb_cdc_top/u_usb_cdc_core/wIndex_w[7:0]">
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[7]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[6]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[5]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[4]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[3]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[2]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[1]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[0]</Signal>
+            </Bus>
+            <Bus name="u_usb_cdc_top/u_usb_cdc_core/bRequest_w[7:0]">
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[7]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[6]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[5]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[4]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[3]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[2]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[1]</Signal>
+                <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[0]</Signal>
+            </Bus>
+            <Signal>u_usb_cdc_top/u_usb_cdc_core/ctrl_ack_r</Signal>
+            <Signal>u_usb_cdc_top/u_usb_cdc_core/ctrl_stall_r</Signal>
+            <Signal>u_usb_cdc_top/u_usb_cdc_core/ctrl_txvalid_r</Signal>
+            <Signal>u_usb_cdc_top/u_usb_cdc_core/ctrl_txstrb_q</Signal>
+            <Signal>u_usb_cdc_top/u_usb_cdc_core/ctrl_txlast_r</Signal>
+            <Signal>u_usb_cdc_top/u_usb_cdc_core/ctrl_txstall_r</Signal>
+            <Signal>u_usb_cdc_top/u_usb_cdc_core/ep0_tx_data_accept_w</Signal>
+            <Signal>u_usb_cdc_top/u_usb_cdc_core/ctrl_send_accept_w</Signal>
+        </SignalList>
+        <Triggers>
+            <Trigger index="0">
+                <SignalList>
+                    <Bus restorename="u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[7:0]">
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[7]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[6]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[5]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[4]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[3]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[2]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[1]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bmRequestType_w[0]</Signal>
+                    </Bus>
+                </SignalList>
+            </Trigger>
+            <Trigger index="1">
+                <SignalList>
+                    <Bus restorename="u_usb_cdc_top/u_usb_cdc_core/bRequest_w[7:0]">
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[7]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[6]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[5]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[4]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[3]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[2]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[1]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/bRequest_w[0]</Signal>
+                    </Bus>
+                </SignalList>
+            </Trigger>
+            <Trigger index="2">
+                <SignalList>
+                    <Bus restorename="u_usb_cdc_top/u_usb_cdc_core/state_q[2:0]">
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/state_q[2]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/state_q[1]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/state_q[0]</Signal>
+                    </Bus>
+                </SignalList>
+            </Trigger>
+            <Trigger index="3">
+                <SignalList>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/setup_valid_q</Signal>
+                </SignalList>
+            </Trigger>
+            <Trigger index="4">
+                <SignalList>
+                    <Bus restorename="u_usb_cdc_top/u_usb_cdc_core/u_core/u_sie_rx/state_q[3:0]">
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/u_core/u_sie_rx/state_q[3]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/u_core/u_sie_rx/state_q[2]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/u_core/u_sie_rx/state_q[1]</Signal>
+                        <Signal>u_usb_cdc_top/u_usb_cdc_core/u_core/u_sie_rx/state_q[0]</Signal>
+                    </Bus>
+                </SignalList>
+            </Trigger>
+            <Trigger index="5">
+                <SignalList>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[7]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[6]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[5]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[4]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[3]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[2]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[1]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wValue_w[0]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[7]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[6]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[5]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[4]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[3]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[2]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[1]</Signal>
+                    <Signal>u_usb_cdc_top/u_usb_cdc_core/wIndex_w[0]</Signal>
+                </SignalList>
+            </Trigger>
+            <Trigger index="6"/>
+            <Trigger index="7"/>
+            <Trigger index="8"/>
+            <Trigger index="9"/>
+            <Trigger index="10"/>
+            <Trigger index="11"/>
+            <Trigger index="12"/>
+            <Trigger index="13"/>
+            <Trigger index="14"/>
+            <Trigger index="15"/>
+        </Triggers>
+        <MatchUnits>
+            <MatchUnit index="0" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="10100001" value1="00000000" trigger="0"/>
+            <MatchUnit index="1" enabled="1" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="10000001" value1="00000000" trigger="1"/>
+            <MatchUnit index="2" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="101" value1="000" trigger="2"/>
+            <MatchUnit index="3" enabled="1" match_type="2" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="1" value1="0" trigger="3"/>
+            <MatchUnit index="4" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="0101" value1="0000" trigger="4"/>
+            <MatchUnit index="5" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="0000000000000001" value1="0000000000000000" trigger="5"/>
+            <MatchUnit index="6" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="7" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="8" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="9" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="10" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="11" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="12" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="13" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="14" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+            <MatchUnit index="15" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
+        </MatchUnits>
+        <Expressions type="Static">
+            <Expression>M1&amp;M3</Expression>
+        </Expressions>
+    </AoCore>
+    <GAO_ID>1110011000011101</GAO_ID>
+</GAO_CONFIG>

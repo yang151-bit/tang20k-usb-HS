@@ -13,6 +13,7 @@ module usb_serial
     // input           uart_tx_i,
 
     // ULPI Interface
+    input           rst_n,
     output          ulpi_reset_o,
     inout [7:0]     ulpi_data_io,
     output          ulpi_stp_o,
@@ -30,16 +31,15 @@ wire clk_bufg_w;
 assign clk_bufg_w = ~ulpi_clk60_i;
 assign usb_clk_w = clk_bufg_w;
 
-reg [3:0] count_q = 4'b0;
-reg       rst_q   = 1'b1;
+reg [3:0]  rst_q;
 
-always @(posedge usb_clk_w) 
-if (count_q != 4'hF)
-    count_q <= count_q + 4'd1;
+always @(posedge usb_clk_w or negedge rst_n) 
+if (~rst_n)
+    rst_q <= 4'b1111;
 else
-    rst_q <= 1'b0;
+    rst_q <= {rst_q[2:0], 1'b0};
 
-assign usb_rst_w = rst_q;
+assign usb_rst_w = rst_q[3];
 
 // ULPI Buffers
 wire [7:0] ulpi_out_w;
@@ -55,8 +55,7 @@ assign ulpi_stp_o = ulpi_stp_w;
 
 // USB Core
 usb_cdc_top
-#( .BAUDRATE(BAUDRATE) )
-u_usb
+u_usb_cdc_top
 (
      .clk_i(usb_clk_w)
     ,.rst_i(usb_rst_w)
@@ -67,12 +66,8 @@ u_usb
     ,.ulpi_nxt_i(ulpi_nxt_i)
     ,.ulpi_data_in_o(ulpi_out_w)
     ,.ulpi_stp_o(ulpi_stp_w)
-
-    ,.tx_i(uart_tx_i)
-    ,.rx_o(uart_rx_o)
 );
 
-assign uart_tx_i = uart_rx_o;
 assign ulpi_reset_o = 1'b1;
 
 endmodule
