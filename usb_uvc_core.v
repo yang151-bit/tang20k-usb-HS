@@ -37,7 +37,7 @@
 //-----------------------------------------------------------------
 `include "usb_defs.v"
 `include "uvc_defs.v"
-module usb_cdc_core
+module usb_uvc_core
 (
     // Inputs
      input           clk_i
@@ -1129,14 +1129,6 @@ always @ (posedge clk_i)
 //-----------------------------------------------------------------
 // Descriptor ROM
 //-----------------------------------------------------------------
-// usb_desc_rom
-// u_rom
-// (
-//     .hs_i(usb_hs_w),
-//     .addr_i(desc_addr_q),
-//     .data_o(desc_data_w)
-// );
-
 usb_desc
 #(
 

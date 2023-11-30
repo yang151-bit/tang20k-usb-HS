@@ -1,10 +1,4 @@
-module usb_serial
-//-----------------------------------------------------------------
-// Params
-//-----------------------------------------------------------------
-#(
-    parameter BAUDRATE         = 1000000
-)
+module usb_camera
 //-----------------------------------------------------------------
 // Ports
 //-----------------------------------------------------------------
@@ -54,8 +48,8 @@ assign ulpi_in_w = ulpi_data_io;
 assign ulpi_stp_o = ulpi_stp_w;
 
 // USB Core
-usb_cdc_top
-u_usb_cdc_top
+usb_uvc_top
+u_usb_uvc_top
 (
      .clk_i(usb_clk_w)
     ,.rst_i(usb_rst_w)

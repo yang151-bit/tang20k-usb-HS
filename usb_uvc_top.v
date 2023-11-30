@@ -38,13 +38,7 @@
 `include "usb_defs.v"
 `include "uvc_defs.v"
 
-module usb_cdc_top
-//-----------------------------------------------------------------
-// Params
-//-----------------------------------------------------------------
-#(
-     parameter BAUDRATE         = 1000000
-)
+module usb_uvc_top
 //-----------------------------------------------------------------
 // Ports
 //-----------------------------------------------------------------
@@ -91,8 +85,8 @@ reg  [1:0]     iso_pid_sel;
 wire [7:0]     frame_idx;
 wire [31:0]    frame_pts;
 
-usb_cdc_core
-u_usb_cdc_core
+usb_uvc_core
+u_usb_uvc_core
 (
     // Inputs
      .clk_i(clk_i)
@@ -283,3 +277,4 @@ always@(posedge clk_i or posedge rst_i) begin
 end
 
 endmodule
+
